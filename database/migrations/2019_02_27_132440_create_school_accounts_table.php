@@ -14,8 +14,20 @@ class CreateSchoolAccountsTable extends Migration
     public function up()
     {
         Schema::create('school_accounts', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->timestamps();
+            $table -> increments('id');
+            $table -> string('account_code', 15 ) -> unique();
+            $table -> string('school_code', 15 );
+            $table -> string('bank_name', 50 );
+            $table -> string('Bank_branch', 50 );
+            $table -> string('country', 50 );
+            $table -> string('city', 50 );
+            $table -> string('swift_code', 20 );
+            $table -> string('account_name', 100 );
+            $table -> string('account_number', 100 );
+
+            $table -> foreign( 'school_code' ) -> references( 'school_code' ) -> on( 'schools' ) -> onDelete( 'cascade' );
+
+            $table -> timestamps();
         });
     }
 
