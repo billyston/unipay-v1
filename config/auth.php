@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -36,15 +36,34 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'admin' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'admins',
         ],
 
         'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
-            'hash' => false,
+            'driver' => 'jwt',
+            'provider' => 'admins',
+        ],
+
+        'schools' => [
+            'driver' => 'session',
+            'provider' => 'school_admins',
+        ],
+
+        'school' => [
+            'driver' => 'jwt',
+            'provider' => 'school_admins',
+        ],
+
+        'student' => [
+            'driver' => 'session',
+            'provider' => 'students',
+        ],
+
+        'students' => [
+            'driver' => 'jwt',
+            'provider' => 'students',
         ],
     ],
 
@@ -66,15 +85,20 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\User::class,
+        'admins' => [
+            'driver'    => 'eloquent',
+            'model'     => \App\Models\Admin::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'schools' => [
+            'driver'    => 'eloquent',
+            'model'     => \App\Models\SchoolAdmin::class,
+        ],
+
+        'students' => [
+            'driver'    => 'eloquent',
+            'model'     => \App\Models\Student::class,
+        ],
     ],
 
     /*
@@ -93,8 +117,20 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+
+        'school_admins' => [
+            'provider' => 'school_admins',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+
+        'students' => [
+            'provider' => 'students',
             'table' => 'password_resets',
             'expire' => 60,
         ],

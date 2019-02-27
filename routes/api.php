@@ -13,6 +13,29 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::group
+(
+    [ 'prefix' => 'unipay-v1' ],
+
+    function ()
+    {
+        Route::group([ 'prefix' => 'auth/admin' ],
+        function ()
+        {
+            Route::post('login',        'AdminController@login');
+            Route::post('logout',       'AdminController@logout');
+            Route::post('refresh',      'AdminController@refresh');
+            Route::post('me',           'AdminController@me');
+        });
+
+        Route::group([ 'prefix' => 'admin' ],
+        function ()
+        {
+            Route::get('all',                   'AdminController@index');
+            Route::post('/create',              'AdminController@store');
+            Route::get('/show/{code}',          'AdminController@show');
+            Route::put('/update/{code}',        'AdminController@update');
+            Route::delete('/delete/{code}',     'AdminController@update');
+        });
+    }
+);
