@@ -16,8 +16,8 @@ class CreateSchoolAdminsTable extends Migration
         Schema::create('school_admins', function (Blueprint $table) {
             $table -> increments('id');
             $table -> string('admin_code', 15 ) -> unique();
-            $table -> string('name', 60 );
             $table -> string('school_code', 15 );
+            $table -> string('name', 60 );
             $table -> string('department', 30 );
             $table -> string('position', 30 );
             $table -> string('phone', 15 );

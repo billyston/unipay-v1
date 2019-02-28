@@ -22,12 +22,11 @@ Route::group
         Route::group([ 'prefix' => 'auth/admin' ],
         function ()
         {
-            Route::post('login',        'AdminController@login');
-            Route::post('logout',       'AdminController@logout');
-            Route::post('refresh',      'AdminController@refresh');
-            Route::post('me',           'AdminController@me');
+            Route::post('login',                'AdminController@login');
+            Route::post('logout',               'AdminController@logout');
+            Route::post('refresh',              'AdminController@refresh');
+            Route::post('me',                   'AdminController@me');
         });
-
         Route::group([ 'prefix' => 'admin' ],
         function ()
         {
@@ -35,7 +34,43 @@ Route::group
             Route::post('/create',              'AdminController@store');
             Route::get('/show/{code}',          'AdminController@show');
             Route::put('/update/{code}',        'AdminController@update');
-            Route::delete('/delete/{code}',     'AdminController@update');
+            Route::delete('/delete/{code}',     'AdminController@destroy');
+        });
+
+        Route::group([ 'prefix' => 'auth/school/admin' ],
+        function ()
+        {
+            Route::post('login',                'SchoolAdminController@login');
+            Route::post('logout',               'SchoolAdminController@logout');
+            Route::post('refresh',              'SchoolAdminController@refresh');
+            Route::post('me',                   'SchoolAdminController@me');
+        });
+        Route::group([ 'prefix' => 'school/admin' ],
+        function ()
+        {
+            Route::get('all',                   'SchoolAdminController@index');
+            Route::post('/create',              'SchoolAdminController@store');
+            Route::get('/show/{code}',          'SchoolAdminController@show');
+            Route::put('/update/{code}',        'SchoolAdminController@update');
+            Route::delete('/delete/{code}',     'SchoolAdminController@destroy');
+        });
+
+        Route::group([ 'prefix' => 'auth/student' ],
+        function ()
+        {
+            Route::post('login',                'StudentController@login');
+            Route::post('logout',               'StudentController@logout');
+            Route::post('refresh',              'StudentController@refresh');
+            Route::post('me',                   'StudentController@me');
+        });
+        Route::group([ 'prefix' => 'student' ],
+        function ()
+        {
+            Route::get('all',                   'StudentController@index');
+            Route::post('/create',              'StudentController@store');
+            Route::get('/show/{code}',          'StudentController@show');
+            Route::put('/update/{code}',        'StudentController@update');
+            Route::delete('/delete/{code}',     'StudentController@destroy');
         });
     }
 );

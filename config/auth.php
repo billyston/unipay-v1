@@ -36,11 +36,10 @@ return [
     */
 
     'guards' => [
-        'admin' => [
+        'admins' => [
             'driver' => 'session',
             'provider' => 'admins',
         ],
-
         'api' => [
             'driver' => 'jwt',
             'provider' => 'admins',
@@ -48,20 +47,18 @@ return [
 
         'schools' => [
             'driver' => 'session',
-            'provider' => 'school_admins',
+            'provider' => 'schools',
         ],
-
         'school' => [
             'driver' => 'jwt',
-            'provider' => 'school_admins',
-        ],
-
-        'student' => [
-            'driver' => 'session',
-            'provider' => 'students',
+            'provider' => 'schools',
         ],
 
         'students' => [
+            'driver' => 'session',
+            'provider' => 'students',
+        ],
+        'student' => [
             'driver' => 'jwt',
             'provider' => 'students',
         ],
@@ -123,7 +120,7 @@ return [
             'expire' => 60,
         ],
 
-        'school_admins' => [
+        'schools' => [
             'provider' => 'school_admins',
             'table' => 'password_resets',
             'expire' => 60,
@@ -135,5 +132,4 @@ return [
             'expire' => 60,
         ],
     ],
-
 ];

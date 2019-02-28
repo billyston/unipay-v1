@@ -9,8 +9,6 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Admin extends Model implements JWTSubject, Authenticatable
 {
-    protected $guarded = [];
-
     use \Illuminate\Auth\Authenticatable;
     use Notifiable;
 

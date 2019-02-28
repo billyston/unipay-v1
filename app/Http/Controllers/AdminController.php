@@ -26,7 +26,7 @@ class AdminController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth() -> guard( 'api' ) -> attempt($credentials)) {
+        if ( !$token = auth() -> guard( 'api' ) -> attempt( $credentials ) ) {
             return response() -> json(['error' => 'Unauthorized'], 401);
         }
 
@@ -80,6 +80,7 @@ class AdminController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
+
 
     /**
      * Display a listing of the resource.
