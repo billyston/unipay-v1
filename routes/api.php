@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::group
 (
-    [ 'prefix' => 'unipay-v1' ],
+    [ 'middleware' => 'api', 'prefix' => 'unipay-v1' ],
 
     function ()
     {
@@ -31,7 +31,7 @@ Route::group
         function ()
         {
             Route::get('all',                   'AdminController@index');
-            Route::post('/create',              'AdminController@store');
+            Route::post('/create',              'AdminController@createAdmin');
             Route::get('/show/{code}',          'AdminController@show');
             Route::put('/update/{code}',        'AdminController@update');
             Route::delete('/delete/{code}',     'AdminController@destroy');

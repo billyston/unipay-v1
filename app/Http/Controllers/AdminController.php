@@ -12,10 +12,10 @@ class AdminController extends Controller
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login']]);
-    }
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api', ['except' => ['login', 'create']]);
+//    }
 
     /**
      * Get a JWT via given credentials.
@@ -51,7 +51,6 @@ class AdminController extends Controller
     public function logout()
     {
         auth()->logout();
-
         return response()->json(['message' => 'Successfully logged out']);
     }
 
@@ -89,7 +88,7 @@ class AdminController extends Controller
      */
     public function index()
     {
-        //
+        return Admin::latest() -> get();
     }
 
     /**
@@ -98,9 +97,33 @@ class AdminController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function createAdmin(Request $request)
     {
-        //
+        $admin = new Admin();
+
+        $admin -> code              = $request -> code;
+        $admin -> name              = $request -> name;
+        $admin -> department        = $request -> department;
+        $admin -> position          = $request -> position;
+        $admin -> phone             = $request -> phone;
+        $admin -> mobile            = $request -> mobile;
+        $admin -> email             = $request -> email;
+        $admin -> password          = bcrypt( $request -> password );
+
+        $request -> validate([
+            'code'                  => 'required|unique:admins',
+            'mobile'                => 'required',
+            'name'                  => 'required',
+            'email'                 => 'required|email|unique:admins',
+            'password'              => 'required|confirmed',
+        ]);
+
+        $admin -> save();
+
+        return response() -> json([
+            'success' => true,
+            'data' => $admin
+        ], 200);
     }
 
     /**
@@ -111,7 +134,7 @@ class AdminController extends Controller
      */
     public function show(Admin $admin)
     {
-        //
+        return $admin;
     }
 
     /**
