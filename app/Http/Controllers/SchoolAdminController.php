@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SchoolAdminResource;
 use App\Models\SchoolAdmin;
 use Illuminate\Http\Request;
 
@@ -14,8 +15,104 @@ class SchoolAdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:school', ['except' => ['login']]);
+        $this->middleware('auth:school', ['except' => ['login', 'add']]);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function add( Request $request )
+    {
+        $SchoolAdmin = new SchoolAdmin();
+
+        $request -> validate([
+            'admin_code'                    => 'required|unique:school_admins',
+            'school_code'                   => 'required',
+            'name'                          => 'required',
+            'department'                    => 'required',
+            'position'                      => 'required',
+            'mobile'                        => 'required',
+            'email'                         => 'required|email|unique:schools',
+        ]);
+
+        $SchoolAdmin -> admin_code          = $request -> admin_code;
+        $SchoolAdmin -> school_code         = $request -> school_code;
+        $SchoolAdmin -> name                = $request -> name;
+        $SchoolAdmin -> department          = $request -> department;
+        $SchoolAdmin -> position            = $request -> position;
+        $SchoolAdmin -> phone               = $request -> phone;
+        $SchoolAdmin -> mobile              = $request -> mobile;
+        $SchoolAdmin -> email               = $request -> email;
+        $SchoolAdmin -> password            = bcrypt( $request -> password );
+
+        try
+        {
+            $SchoolAdmin -> save();
+            return response() -> json([
+                "status" => "success",
+                "code" => 200,
+                "message" => "Created successfully",
+            ], 200);
+        }
+
+        catch (Exception $e)
+        {
+            return response() -> json([
+                "status" => "error",
+                "code" => 200,
+                "message" => "Could not create account. Try again later",
+            ], 200);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\SchoolAdmin  $schoolAdmin
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $admin_code )
+    {
+        return new SchoolAdminResource( SchoolAdmin::findOrFail( $admin_code ) );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\SchoolAdmin  $schoolAdmin
+     * @return \Illuminate\Http\Response
+     */
+    public function update( Request $request, SchoolAdmin $schoolAdmin )
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\SchoolAdmin  $schoolAdmin
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy( SchoolAdmin $schoolAdmin )
+    {
+        //
+    }
+
+
 
     /**
      * Get a JWT via given credentials.
@@ -79,82 +176,5 @@ class SchoolAdminController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
-    }
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\SchoolAdmin  $schoolAdmin
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SchoolAdmin $schoolAdmin)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\SchoolAdmin  $schoolAdmin
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(SchoolAdmin $schoolAdmin)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SchoolAdmin  $schoolAdmin
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, SchoolAdmin $schoolAdmin)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\SchoolAdmin  $schoolAdmin
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SchoolAdmin $schoolAdmin)
-    {
-        //
     }
 }

@@ -12,8 +12,9 @@ class Student extends Model implements JWTSubject, Authenticatable
     use \Illuminate\Auth\Authenticatable;
     use Notifiable;
 
-    // Rest omitted for brevity
+    protected $primaryKey = 'code';
 
+    // Rest omitted for brevity
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

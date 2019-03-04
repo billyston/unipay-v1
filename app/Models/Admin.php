@@ -12,10 +12,7 @@ class Admin extends Model implements JWTSubject, Authenticatable
     use \Illuminate\Auth\Authenticatable;
     use Notifiable;
 
-    public function getRouteKeyName()
-    {
-        return 'code';
-    }
+    protected $primaryKey = 'code';
 
     // Rest omitted for brevity
 

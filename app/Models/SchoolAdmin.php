@@ -12,6 +12,8 @@ class SchoolAdmin extends Model implements JWTSubject, Authenticatable
     use \Illuminate\Auth\Authenticatable;
     use Notifiable;
 
+    protected $primaryKey = 'admin_code';
+
     // Rest omitted for brevity
 
     /**

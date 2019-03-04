@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AdminResource;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 
@@ -12,10 +13,103 @@ class AdminController extends Controller
      *
      * @return void
      */
-//    public function __construct()
-//    {
-//        $this->middleware('auth:api', ['except' => ['login', 'create']]);
-//    }
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'create']]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return new AdminResource( Admin::latest() -> get() );
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function create( Request $request )
+    {
+        $admin = new Admin();
+
+        $request -> validate([
+            'code'                  => 'required|unique:admins',
+            'mobile'                => 'required',
+            'name'                  => 'required',
+            'email'                 => 'required|email|unique:admins',
+            'password'              => 'required|confirmed',
+        ]);
+
+        $admin -> code              = $request -> code;
+        $admin -> name              = $request -> name;
+        $admin -> department        = $request -> department;
+        $admin -> position          = $request -> position;
+        $admin -> phone             = $request -> phone;
+        $admin -> mobile            = $request -> mobile;
+        $admin -> email             = $request -> email;
+        $admin -> password          = bcrypt( $request -> password );
+
+        try
+        {
+            $admin -> save();
+            return response() -> json([
+                "status" => "success",
+                "code" => 200,
+                "message" => "Created successfully",
+            ], 200);
+        }
+
+        catch (Exception $e)
+        {
+            return response() -> json([
+                "status" => "error",
+                "code" => 200,
+                "message" => "Could not create account. Try again later",
+            ], 200);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Admin  $admin
+     * @return \Illuminate\Http\Response
+     */
+    public function show( $code )
+    {
+        return new AdminResource( Admin::findOrFail( $code ) );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Admin  $admin
+     * @return \Illuminate\Http\Response
+     */
+    public function update( Request $request, Admin $admin )
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Admin  $admin
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy( Admin $admin )
+    {
+        //
+    }
+
+
 
     /**
      * Get a JWT via given credentials.
@@ -78,85 +172,5 @@ class AdminController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
-    }
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return Admin::latest() -> get();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function createAdmin(Request $request)
-    {
-        $admin = new Admin();
-
-        $admin -> code              = $request -> code;
-        $admin -> name              = $request -> name;
-        $admin -> department        = $request -> department;
-        $admin -> position          = $request -> position;
-        $admin -> phone             = $request -> phone;
-        $admin -> mobile            = $request -> mobile;
-        $admin -> email             = $request -> email;
-        $admin -> password          = bcrypt( $request -> password );
-
-        $request -> validate([
-            'code'                  => 'required|unique:admins',
-            'mobile'                => 'required',
-            'name'                  => 'required',
-            'email'                 => 'required|email|unique:admins',
-            'password'              => 'required|confirmed',
-        ]);
-
-        $admin -> save();
-
-        return response() -> json([
-            'success' => true,
-            'data' => $admin
-        ], 200);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Admin $admin)
-    {
-        return $admin;
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Admin $admin)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Admin  $admin
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Admin $admin)
-    {
-        //
     }
 }

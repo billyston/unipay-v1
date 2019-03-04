@@ -23,10 +23,10 @@ class CreateStudentsTable extends Migration
             $table -> string('gender', 10 );
             $table -> date('date_of_birth' );
             $table -> string('country', 50 );
-            $table -> string('picture', 150 );
+            $table -> string('picture', 255, null );
             $table -> string('phone', 15 );
             $table -> string('address', 100 );
-            $table -> string('school_id', 20 );
+            $table -> string('student_id', 20 );
             $table -> string('current_level', 30 );
             $table -> string('campus', 50 );
             $table -> string('email', 50 );
