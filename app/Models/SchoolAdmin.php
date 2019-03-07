@@ -13,6 +13,7 @@ class SchoolAdmin extends Model implements JWTSubject, Authenticatable
     use Notifiable;
 
     protected $primaryKey = 'admin_code';
+    protected $guarded = [];
 
     // Rest omitted for brevity
 

@@ -12,7 +12,8 @@ class Student extends Model implements JWTSubject, Authenticatable
     use \Illuminate\Auth\Authenticatable;
     use Notifiable;
 
-    protected $primaryKey = 'code';
+    protected $primaryKey = 'student_code';
+    protected $guarded = [];
 
     // Rest omitted for brevity
     /**

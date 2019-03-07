@@ -98,27 +98,9 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update( Request $request, Student $student )
+    public function update( Request $request, $student_code )
     {
-        $student -> student_code        = $request -> student_code;
-        $student -> school_code         = $request -> school_code;
-        $student -> first_name          = $request -> first_name;
-        $student -> middle_name         = $request -> middle_name;
-        $student -> last_name           = $request -> last_name;
-        $student -> gender              = $request -> gender;
-        $student -> date_of_birth       = $request -> date_of_birth;
-        $student -> country             = $request -> country;
-        $student -> picture             = $request -> picture;
-        $student -> phone               = $request -> phone;
-        $student -> address             = $request -> address;
-        $student -> student_id          = $request -> student_id;
-        $student -> current_level       = $request -> current_level;
-        $student -> campus              = $request -> campus;
-        $student -> email               = $request -> email;
-        $student -> password            = $request -> password;
-
         $request -> validate([
-            'school_code'               => 'required',
             'first_name'                => 'required',
             'middle_name'               => 'required',
             'last_name'                 => 'required',
@@ -128,24 +110,28 @@ class StudentController extends Controller
             'phone'                     => 'required',
             'address'                   => 'required',
             'student_id'                => 'required',
-            'email'                     => 'required|email|unique:schools',
-            'password'                  => 'required|confirmed',
+            'current_level'             => 'required',
+            'campus'                    => 'required',
         ]);
 
-        try
-        {
-            $student -> update( $request -> all() );
+        $student = Student:: findOrFail( $student_code );
 
+        if ( $student -> update( $request -> all() ) )
+        {
+            return response() -> json([
+                "status" => "success",
+                "code" => 200,
+                "message" => "Updated successfully",
+            ], 200);
+        }
+
+        else
+        {
             return response() -> json([
                 "status" => "error",
                 "code" => 200,
                 "message" => "Could not update. Try again later",
             ], 200);
-        }
-
-        catch (Exception $e)
-        {
-            return $e;
         }
     }
 

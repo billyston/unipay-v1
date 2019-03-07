@@ -25,7 +25,8 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return new AdminResource( Admin::latest() -> get() );
+        return Admin::latest() -> get();
+//        return new AdminResource( Admin::latest() -> get() );
     }
 
     /**
@@ -93,9 +94,35 @@ class AdminController extends Controller
      * @param  \App\Models\Admin  $admin
      * @return \Illuminate\Http\Response
      */
-    public function update( Request $request, Admin $admin )
+    public function update( Request $request, $code )
     {
-        //
+        $request -> validate([
+            'name'                  => 'required',
+            'department'            => 'required',
+            'position'              => 'required',
+            'phone'                 => 'required',
+            'mobile'                => 'required',
+        ]);
+
+        $admin = Admin::findOrFail( $code );
+
+        if ( $admin -> update( $request -> all() ) )
+        {
+            return response() -> json([
+                "status" => "success",
+                "code" => 200,
+                "message" => "Updated successfully",
+            ], 200);
+        }
+
+        else
+        {
+            return response() -> json([
+                "status" => "error",
+                "code" => 200,
+                "message" => "Could not update. Try again later",
+            ], 200);
+        }
     }
 
     /**

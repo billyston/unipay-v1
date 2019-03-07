@@ -13,6 +13,7 @@ class Admin extends Model implements JWTSubject, Authenticatable
     use Notifiable;
 
     protected $primaryKey = 'code';
+    protected $guarded = [];
 
     // Rest omitted for brevity
 
