@@ -23,6 +23,7 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\CreateSchoolAdminEvent'     => [ 'App\Listeners\CreateSchoolAdminListener' ],
         'App\Events\CreateStudentEvent'         => [ 'App\Listeners\CreateStudentListener' ],
         'App\Events\CreateTransactionEvent'     => [ 'App\Listeners\CreateTransactionListener' ],
+        'App\Events\CreateWalletEvent'          => [ 'App\Listeners\CreateWalletListener' ],
     ];
 
     /**

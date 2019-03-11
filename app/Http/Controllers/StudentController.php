@@ -39,22 +39,25 @@ class StudentController extends Controller
         try
         {
             $this -> validate( $request, [
-                'school_code'               => 'required',
-                'first_name'                => 'required',
-                'middle_name'               => 'required',
-                'last_name'                 => 'required',
-                'gender'                    => 'required',
-                'date_of_birth'             => 'required',
-                'country'                   => 'required',
-                'phone'                     => 'required',
-                'address'                   => 'required',
-                'student_id'                => 'required|unique:students',
-                'email'                     => 'required|email|unique:students',
-                'password'                  => 'required|confirmed',
+                'school_code'           => 'required',
+                'first_name'            => 'required',
+                'middle_name'           => 'required',
+                'last_name'             => 'required',
+                'gender'                => 'required',
+                'date_of_birth'         => 'required',
+                'country'               => 'required',
+                'phone'                 => 'required',
+                'address'               => 'required',
+                'student_id'            => 'required|unique:students',
+                'email'                 => 'required|email|unique:students',
+                'password'              => 'required|confirmed',
             ]);
 
             try
             {
+                // Get wallet details
+
+
                 $Student = new Student( $request -> except( 'password_confirmation' ) );
 
                 if ( $Student -> save() )
@@ -70,7 +73,7 @@ class StudentController extends Controller
                     return response() -> json([
                         'status'        => 'Error',
                         'code'          => 200,
-                        'message"   => "Could not create account. Try again later',
+                        'message'       => 'Could not create account. Try again later',
                     ], 200 );
                 }
             }
@@ -89,10 +92,10 @@ class StudentController extends Controller
         catch ( ValidationException $e )
         {
             return response() -> json([
-                "status"            => "validation error",
-                "code"              => 200,
-                "message"           => $e -> getMessage(),
-                'reason'            => $e -> errors(),
+                "status"                => "validation error",
+                "code"                  => 200,
+                "message"               => $e -> getMessage(),
+                'reason'                => $e -> errors(),
             ], 200 );
         }
     }
@@ -190,6 +193,18 @@ class StudentController extends Controller
     }
 
 
+    // Wallets
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeWallet( Request $request )
+    {
+        return app(\App\Http\Controllers\WalletController::class ) -> store( $request );
+    }
+
     // Transactions
     /**
      * Store a newly created resource in storage.
@@ -215,6 +230,7 @@ class StudentController extends Controller
     }
 
 
+    // JWT Authentication
     /**
      * Get a JWT via given credentials.
      *

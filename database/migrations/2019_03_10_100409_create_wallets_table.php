@@ -20,9 +20,9 @@ class CreateWalletsTable extends Migration
             $table -> string( 'name', 60 ) -> comment( "Name on the momo or card" );
             $table -> string( 'rswitch', 5 ) -> comment( "Type of routing switch (MTN, TGO, ATL, VDF, VIS, MAS, TLA)" );
             $table -> string( 'rswitch_number', 15 ) -> comment( "The Momo or Card number" );
-            $table -> string( 'expire_month', 3 ) -> comment( "Card expiry month" );
-            $table -> string( 'expire_year', 5 ) -> comment( "Card expiry year" );
-            $table -> string( 'cvv', 4 ) -> comment( "Card CVV" );
+            $table -> string( 'expire_month', 3 ) -> nullable() -> comment( "Card expiry month" );
+            $table -> string( 'expire_year', 5 ) -> nullable() -> comment( "Card expiry year" );
+            $table -> string( 'cvv', 4 ) -> nullable() -> comment( "Card CVV" );
             $table -> string( 'status', 5 ) -> comment( "Values determines if card is active to be used of transaction" );
             $table -> string( 'verification_attempts', 2 ) -> comment( "Attempts made upon verification" );
 

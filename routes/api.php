@@ -96,6 +96,10 @@ Route::group
             Route::delete('/delete/{student_code}',     'StudentController@destroy');
 
             // Student transactions routes
+            Route::post('/wallet/add',                  'StudentController@storeWallet');
+            Route::get('/transactions/{student_code}',  'StudentController@transactions');
+
+            // Student transactions routes
             Route::post('/transaction',                 'StudentController@storeTransaction');
             Route::get('/transactions/{student_code}',  'StudentController@transactions');
         });

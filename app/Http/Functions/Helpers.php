@@ -24,6 +24,11 @@
         return generateCode( 'TRN-', 11 );
     }
 
+    function generateWalletCode()
+    {
+        return generateCode( 'WLT-', 6 );
+    }
+
     function generateTransactionRRN()
     {
         return generateRRN( 12 );
