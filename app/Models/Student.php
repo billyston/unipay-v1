@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\CreateStudentEvent;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,22 @@ class Student extends Model implements JWTSubject, Authenticatable
     use Notifiable;
 
     protected $primaryKey = 'student_code';
-    protected $guarded = [];
+    protected $guarded = ['id'];
+
+    protected $dispatchesEvents = [
+        'creating'      => CreateStudentEvent::class
+    ];
+
+    /**
+     * Encrypt Student password.
+     *
+     * @param string $password
+     * @return void
+     */
+    public function setPasswordAttribute( string $password ): void
+    {
+        $this -> attributes['password'] = bcrypt( $password );
+    }
 
     // Rest omitted for brevity
     /**
@@ -40,6 +56,11 @@ class Student extends Model implements JWTSubject, Authenticatable
     public function School()
     {
         return $this -> belongsTo( School::class );
+    }
+
+    public function Wallet()
+    {
+        return $this -> hasMany( Wallet::class );
     }
 
     public function Transactions()

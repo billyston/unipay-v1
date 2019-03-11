@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use App\Events\CreateSchoolEvent;
 use Illuminate\Database\Eloquent\Model;
 
 class School extends Model
 {
-    protected $guarded = [];
+    protected $primaryKey   = 'school_code';
+    protected $guarded      = ['id'];
+
+    protected $dispatchesEvents = [
+        'creating' => CreateSchoolEvent::class
+    ];
 
     public function SchoolAdmins()
     {

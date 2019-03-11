@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 
 class SchoolController extends Controller
@@ -14,7 +15,7 @@ class SchoolController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['register']]);
+        $this->middleware('auth:api', ['except' => ['store']]);
     }
 
     /**
@@ -30,45 +31,65 @@ class SchoolController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function register( Request $request )
+    public function store( Request $request )
     {
-        $school = new School();
+        try
+        {
+            $this -> validate( $request, [
+                'name'              => 'required',
+                'country'           => 'required',
+                'city'              => 'required',
+                'mobile'            => 'required',
+                'email'             => 'required|email|unique:schools',
+                'logo'              => 'required',
+            ]);
 
-        $request -> validate([
-            'school_code'               => 'required|unique:schools',
-            'name'                      => 'required',
-            'country'                   => 'required',
-            'city'                      => 'required',
-            'mobile'                    => 'required',
-            'email'                     => 'required|email|unique:schools',
-            'logo'                      => 'required',
-        ]);
+            try
+            {
+                $school = new School( $request -> all() );
 
-        $school -> school_code          = $request -> school_code;
-        $school -> name                 = $request -> name;
-        $school -> country              = $request -> country;
-        $school -> city                 = $request -> city;
-        $school -> state                = $request -> state;
-        $school -> postal_code          = $request -> postal_code;
-        $school -> street_address       = $request -> street_address;
-        $school -> phone                = $request -> phone;
-        $school -> fax                  = $request -> fax;
-        $school -> mobile               = $request -> mobile;
-        $school -> email                = $request -> email;
-        $school -> population           = $request -> population;
-        $school -> about                = $request -> about;
-        $school -> logo                 = $request -> logo;
+                if ( $school -> save() )
+                {
+                    return response() -> json([
+                        "status"    => "success",
+                        "code"      => 200,
+                        "message"   => "Created successfully",
+                    ], 200);
+                }
 
-        $school -> save();
+                else
+                {
+                    return response() -> json([
+                        "status"    => "error",
+                        "code"      => 200,
+                        "message"   => "Could not create account. Try again later",
+                    ], 200);
+                }
+            }
 
-        return response() -> json([
-            "status" => "success",
-            "code" => 200,
-            "message" => "Registration successful",
-        ], 200);
+            catch ( \Exception $exception )
+            {
+                logger( $exception -> getMessage() );
+
+                return response() -> json([
+                    "status"        => "error",
+                    "code"          => 200,
+                    "message"       => "Something went wrong. Try again later",
+                ], 200);
+            }
+        }
+        catch ( ValidationException $e )
+        {
+            return response() -> json([
+                "status"            => "validation error",
+                "code"              => 200,
+                "message"           => $e -> getMessage(),
+            ], 200);
+        }
     }
 
     /**

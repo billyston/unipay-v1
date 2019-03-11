@@ -13,16 +13,16 @@ class CreateAdminsTable extends Migration
      */
     public function up()
     {
-        Schema::create('admins', function (Blueprint $table) {
+        Schema::create('admins', function ( Blueprint $table ) {
             $table -> increments('id');
-            $table -> string('code', 15 ) -> unique();
-            $table -> string('name', 60 );
-            $table -> string('department', 30 );
-            $table -> string('position', 30 );
-            $table -> string('phone', 15 );
-            $table -> string('mobile', 15 );
-            $table -> string('email', 50 ) -> unique();
-            $table -> string('password', 200 );
+            $table -> string('code', 15 ) -> unique() -> comment( "Unique code as a primary key" );
+            $table -> string('name', 60 ) -> comment( "The name of the admin user" );
+            $table -> string('department', 30 ) -> comment( "Department of the admin user" );
+            $table -> string('position', 30 ) -> comment( "The position of the admin user" );
+            $table -> string('phone', 15 ) -> comment( "Phone of the admin user" );
+            $table -> string('mobile', 15 ) -> comment( "Mobile of the admin user" );
+            $table -> string('email', 50 ) -> unique() -> comment( "Email of the admin user" );
+            $table -> string('password', 200 ) -> comment( "Chosen password of the admin user" );
             $table -> timestamps();
         });
     }

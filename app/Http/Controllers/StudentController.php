@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\StudentResource;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class StudentController extends Controller
 {
@@ -15,7 +16,7 @@ class StudentController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:student', ['except' => ['login', 'register']]);
+        $this->middleware('auth:student', ['except' => ['login', 'store']]);
     }
 
     /**
@@ -25,7 +26,6 @@ class StudentController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -34,50 +34,67 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function register( Request $request )
+    public function store( Request $request )
     {
-        $Student = new Student();
+        try
+        {
+            $this -> validate( $request, [
+                'school_code'               => 'required',
+                'first_name'                => 'required',
+                'middle_name'               => 'required',
+                'last_name'                 => 'required',
+                'gender'                    => 'required',
+                'date_of_birth'             => 'required',
+                'country'                   => 'required',
+                'phone'                     => 'required',
+                'address'                   => 'required',
+                'student_id'                => 'required|unique:students',
+                'email'                     => 'required|email|unique:students',
+                'password'                  => 'required|confirmed',
+            ]);
 
-        $request -> validate([
-            'student_code'              => 'required|unique:students',
-            'school_code'               => 'required',
-            'first_name'                => 'required',
-            'middle_name'               => 'required',
-            'last_name'                 => 'required',
-            'gender'                    => 'required',
-            'date_of_birth'             => 'required',
-            'country'                   => 'required',
-            'phone'                     => 'required',
-            'address'                   => 'required',
-            'student_id'                => 'required|unique:students',
-            'email'                     => 'required|email|unique:schools',
-            'password'                  => 'required|confirmed',
-        ]);
+            try
+            {
+                $Student = new Student( $request -> except( 'password_confirmation' ) );
 
-        $Student -> student_code        = $request -> student_code;
-        $Student -> school_code         = $request -> school_code;
-        $Student -> first_name          = $request -> first_name;
-        $Student -> middle_name         = $request -> middle_name;
-        $Student -> last_name           = $request -> last_name;
-        $Student -> gender              = $request -> gender;
-        $Student -> date_of_birth       = $request -> date_of_birth;
-        $Student -> country             = $request -> country;
-        $Student -> picture             = $request -> picture;
-        $Student -> phone               = $request -> phone;
-        $Student -> address             = $request -> address;
-        $Student -> student_id          = $request -> student_id;
-        $Student -> current_level       = $request -> current_level;
-        $Student -> campus              = $request -> campus;
-        $Student -> email               = $request -> email;
-        $Student -> password            = bcrypt( $request -> password );
+                if ( $Student -> save() )
+                {
+                    return response() -> json([
+                        'status'        => 'Success',
+                        'code'          => 200,
+                        'message'       => 'Created successfully'
+                    ], 200 );
+                }
+                else
+                {
+                    return response() -> json([
+                        'status'        => 'Error',
+                        'code'          => 200,
+                        'message"   => "Could not create account. Try again later',
+                    ], 200 );
+                }
+            }
 
-        $Student -> save();
+            catch ( \Exception $exception )
+            {
+                return response() -> json([
+                    'status'            => 'Error',
+                    'code'              => 200,
+                    'message'           => 'Something went wrong. Try again later',
+                    'reason'            =>  $exception -> errors()
+                ], 200 );
+            }
+        }
 
-        return response() -> json([
-            "status" => "success",
-            "code" => 200,
-            "message" => "Your registration successful. Check your email.",
-        ], 200);
+        catch ( ValidationException $e )
+        {
+            return response() -> json([
+                "status"            => "validation error",
+                "code"              => 200,
+                "message"           => $e -> getMessage(),
+                'reason'            => $e -> errors(),
+            ], 200 );
+        }
     }
 
     /**
@@ -100,38 +117,64 @@ class StudentController extends Controller
      */
     public function update( Request $request, $student_code )
     {
-        $request -> validate([
-            'first_name'                => 'required',
-            'middle_name'               => 'required',
-            'last_name'                 => 'required',
-            'gender'                    => 'required',
-            'date_of_birth'             => 'required',
-            'country'                   => 'required',
-            'phone'                     => 'required',
-            'address'                   => 'required',
-            'student_id'                => 'required',
-            'current_level'             => 'required',
-            'campus'                    => 'required',
-        ]);
-
-        $student = Student:: findOrFail( $student_code );
-
-        if ( $student -> update( $request -> all() ) )
+        try
         {
-            return response() -> json([
-                "status" => "success",
-                "code" => 200,
-                "message" => "Updated successfully",
-            ], 200);
+            $this -> validate( $request, [
+                'first_name'        => 'required',
+                'middle_name'       => 'required',
+                'last_name'         => 'required',
+                'gender'            => 'required',
+                'date_of_birth'     => 'required',
+                'country'           => 'required',
+                'phone'             => 'required',
+                'address'           => 'required',
+                'student_id'        => 'required',
+                'current_level'     => 'required',
+                'campus'            => 'required',
+            ]);
+
+            try
+            {
+                $student = Student:: findOrFail( $student_code );
+
+                if ( $student -> update( $request -> all() ) )
+                {
+                    return response() -> json([
+                        "status" => "success",
+                        "code" => 200,
+                        "message" => "Updated successfully",
+                    ], 200 );
+                }
+
+                else
+                {
+                    return response() -> json([
+                        "status" => "error",
+                        "code" => 200,
+                        "message" => "Could not update. Try again later",
+                    ], 200) ;
+                }
+            }
+
+            catch ( \Exception $exception )
+            {
+                return response() -> json([
+                    'status'            => 'Error',
+                    'code'              => 200,
+                    'message'           => 'Something went wrong. Try again later',
+                    'reason'            =>  $exception -> errors()
+                ], 200 );
+            }
         }
 
-        else
+        catch ( ValidationException $e )
         {
             return response() -> json([
-                "status" => "error",
-                "code" => 200,
-                "message" => "Could not update. Try again later",
-            ], 200);
+                'staus'             => 'validation error',
+                'code'              => 200,
+                'message'           => $e -> getMessage(),
+                'reason'            => $e -> errors()
+            ], 200 );
         }
     }
 
@@ -147,6 +190,29 @@ class StudentController extends Controller
     }
 
 
+    // Transactions
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeTransaction( Request $request )
+    {
+        return app(\App\Http\Controllers\TransactionController::class ) -> store( $request );
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Student  $student
+     * @return \Illuminate\Http\Response
+     */
+    public function transactions( Request $request, $student_code )
+    {
+//        return app(\App\Http\Controllers\TransactionController::class ) -> store( $request );
+    }
 
 
     /**

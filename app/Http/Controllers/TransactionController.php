@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
@@ -14,17 +15,7 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return Transaction::latest() -> get();
     }
 
     /**
@@ -33,9 +24,61 @@ class TransactionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store( Request $request )
     {
-        //
+        try
+        {
+            $this -> validate( $request, [
+                'payment_type'              => 'required',
+                'transacted_amount'         => 'required',
+                'transaction_charge'        => 'required',
+                'total_amount'              => 'required',
+                'transaction_desc'          => 'required',
+            ] );
+
+            try
+            {
+                $transaction = new Transaction( $request -> all() );
+
+                if ( $transaction -> save() )
+                {
+                    return response() -> json([
+                        'status'        => 'Success',
+                        'code'          => 200,
+                        'message'       => 'Created successfully'
+                    ], 200 );
+                }
+
+                else
+                {
+                    return response() -> json([
+                        'status'        => 'Error',
+                        'code'          => 200,
+                        'message"   => "Could not create account. Try again later',
+                    ], 200 );
+                }
+            }
+
+            catch ( \Exception $exception )
+            {
+                return response() -> json([
+                    'status'            => 'Error',
+                    'code'              => 200,
+                    'message'           => 'Something went wrong. Try again later',
+                    'reason'            =>  $exception -> getMessage()
+                ], 200 );
+            }
+        }
+
+        catch ( ValidationException $exception )
+        {
+            return response() -> json([
+                "status"            => "validation error",
+                "code"              => 200,
+                "message"           => $exception -> getMessage(),
+                'reason'            => $exception -> errors(),
+            ], 200 );
+        }
     }
 
     /**
@@ -44,7 +87,7 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function show(Transaction $transaction)
+    public function show( Transaction $transaction )
     {
         //
     }
@@ -55,7 +98,7 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function edit(Transaction $transaction)
+    public function edit( Transaction $transaction )
     {
         //
     }
@@ -67,7 +110,7 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Transaction $transaction)
+    public function update( Request $request, Transaction $transaction )
     {
         //
     }
@@ -78,7 +121,7 @@ class TransactionController extends Controller
      * @param  \App\Models\Transaction  $transaction
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Transaction $transaction)
+    public function destroy( Transaction $transaction )
     {
         //
     }

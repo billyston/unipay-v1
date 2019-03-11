@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AdminResource;
 use App\Models\Admin;
+use App\Models\School;
+use App\Models\SchoolAdmin;
+use App\Models\Student;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -15,7 +19,7 @@ class AdminController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'create']]);
+        $this->middleware('auth:api', ['except' => ['login', 'store']]);
     }
 
     /**
@@ -26,7 +30,6 @@ class AdminController extends Controller
     public function index()
     {
         return Admin::latest() -> get();
-//        return new AdminResource( Admin::latest() -> get() );
     }
 
     /**
@@ -35,43 +38,55 @@ class AdminController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function create( Request $request )
+    public function store( Request $request )
     {
-        $admin = new Admin();
-
-        $request -> validate([
-            'code'                  => 'required|unique:admins',
-            'mobile'                => 'required',
-            'name'                  => 'required',
-            'email'                 => 'required|email|unique:admins',
-            'password'              => 'required|confirmed',
-        ]);
-
-        $admin -> code              = $request -> code;
-        $admin -> name              = $request -> name;
-        $admin -> department        = $request -> department;
-        $admin -> position          = $request -> position;
-        $admin -> phone             = $request -> phone;
-        $admin -> mobile            = $request -> mobile;
-        $admin -> email             = $request -> email;
-        $admin -> password          = bcrypt( $request -> password );
-
         try
         {
-            $admin -> save();
-            return response() -> json([
-                "status" => "success",
-                "code" => 200,
-                "message" => "Created successfully",
-            ], 200);
+            $this -> validate( $request, [
+                'mobile'            => 'required',
+                'name'              => 'required',
+                'email'             => 'required|email|unique:admins',
+                'password'          => 'required|confirmed'
+            ]);
+
+            try
+            {
+                $admin = new Admin( $request -> except('password_confirmation' ) );
+
+                if ( $admin -> save() )
+                {
+                    return response() -> json([
+                        "status"    => "success",
+                        "code"      => 200,
+                        "message"   => "Created successfully",
+                    ], 200);
+                }
+                else
+                {
+                    return response() -> json([
+                        "status"    => "error",
+                        "code"      => 200,
+                        "message"   => "Could not create account. Try again later",
+                    ], 200);
+                }
+            }
+
+            catch ( \Exception $exception )
+            {
+                return response() -> json([
+                    "status"        => "error",
+                    "code"          => 200,
+                    "message"       => "Something went wrong. Try again later",
+                ], 200);
+            }
         }
 
-        catch (Exception $e)
+        catch ( ValidationException $e )
         {
             return response() -> json([
-                "status" => "error",
-                "code" => 200,
-                "message" => "Could not create account. Try again later",
+                "status"            => "validation error",
+                "code"              => 200,
+                "message"           => $e -> getMessage(),
             ], 200);
         }
     }
@@ -96,31 +111,54 @@ class AdminController extends Controller
      */
     public function update( Request $request, $code )
     {
-        $request -> validate([
-            'name'                  => 'required',
-            'department'            => 'required',
-            'position'              => 'required',
-            'phone'                 => 'required',
-            'mobile'                => 'required',
-        ]);
-
-        $admin = Admin::findOrFail( $code );
-
-        if ( $admin -> update( $request -> all() ) )
+        try
         {
-            return response() -> json([
-                "status" => "success",
-                "code" => 200,
-                "message" => "Updated successfully",
-            ], 200);
+            $this -> validate( $request, [
+                'name'              => 'required',
+                'department'        => 'required',
+                'position'          => 'required',
+                'phone'             => 'required',
+                'mobile'            => 'required',
+            ]);
+
+            try
+            {
+                $admin = Admin::findOrFail( $code );
+
+                if ( $admin -> update( $request -> all() ) )
+                {
+                    return response() -> json([
+                        "status"    => "success",
+                        "code"      => 200,
+                        "message"   => "Updated successfully",
+                    ], 200 );
+                }
+                else
+                {
+                    return response() -> json([
+                        "status"    => "error",
+                        "code"      => 200,
+                        "message"   => "Could not update. Try again later",
+                    ], 200 );
+                }
+            }
+
+            catch ( \Exception $exception )
+            {
+                return response() -> json([
+                    "status"        => "error",
+                    "code"          => 200,
+                    "message"       => "Something went wrong. Try again later",
+                ], 200 );
+            }
         }
 
-        else
+        catch ( ValidationException $e )
         {
             return response() -> json([
-                "status" => "error",
-                "code" => 200,
-                "message" => "Could not update. Try again later",
+                "status"            => "validation error",
+                "code"              => 200,
+                "message"           => $e -> getMessage(),
             ], 200);
         }
     }
@@ -137,7 +175,50 @@ class AdminController extends Controller
     }
 
 
+    // School Model
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function schools()
+    {
+        return School::latest() -> get();
+    }
 
+
+    // School Admin Model
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function schoolAdmin()
+    {
+        return SchoolAdmin::latest() -> get();
+    }
+
+
+    // Students
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function students()
+    {
+        return Student::latest() -> get();
+    }
+
+
+    // Transactions
+    public function getAll()
+    {
+        return app( \App\Http\Controllers\TransactionController::class ) -> index();
+    }
+
+
+    // JWT Methods
     /**
      * Get a JWT via given credentials.
      *

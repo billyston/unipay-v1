@@ -19,6 +19,7 @@ Route::group
 
     function ()
     {
+        // Admin routes
         Route::group([ 'prefix' => 'auth/admin' ],
         function ()
         {
@@ -31,12 +32,35 @@ Route::group
         function ()
         {
             Route::get('all',                           'AdminController@index');
-            Route::post('/create',                      'AdminController@create');
+            Route::post('/create',                      'AdminController@store');
             Route::get('/profile/{code}',               'AdminController@show');
             Route::put('/update/{code}',                'AdminController@update');
             Route::delete('/delete/{code}',             'AdminController@destroy');
+
+            // On School model
+            Route::get('schools',                       'AdminController@schools');
+
+            // On SchoolAdmin model
+            Route::get('school/admins',                 'AdminController@schoolAdmin');
+
+            // On Student model
+            Route::get('students',                      'AdminController@students');
+
+            // On Student model
+            Route::get('transactions',                  'AdminController@getAll');
         });
 
+        // School routes
+        Route::group([ 'prefix' => 'school' ],
+        function ()
+        {
+            Route::post('/signup',                      'SchoolController@store');
+            Route::get('/show/{code}',                  'SchoolController@show');
+            Route::put('/update/{code}',                'SchoolController@update');
+            Route::delete('/delete/{code}',             'SchoolController@destroy');
+        });
+
+        // School admin routes
         Route::group([ 'prefix' => 'auth/school/admin' ],
         function ()
         {
@@ -48,13 +72,13 @@ Route::group
         Route::group([ 'prefix' => 'school/admin' ],
         function ()
         {
-            Route::get('all',                           'SchoolAdminController@index');
-            Route::post('/add',                         'SchoolAdminController@add');
+            Route::post('/create',                      'SchoolAdminController@store');
             Route::get('/profile/{admin_code}',         'SchoolAdminController@show');
             Route::put('/update/{code}',                'SchoolAdminController@update');
             Route::delete('/delete/{code}',             'SchoolAdminController@destroy');
         });
 
+        // Student routes
         Route::group([ 'prefix' => 'auth/student' ],
         function ()
         {
@@ -66,21 +90,14 @@ Route::group
         Route::group([ 'prefix' => 'student' ],
         function ()
         {
-            Route::get('all',                           'StudentController@index');
-            Route::post('/register',                    'StudentController@register');
+            Route::post('/register',                    'StudentController@store');
             Route::get('/show/{student_code}',          'StudentController@show');
             Route::put('/update/{student_code}',        'StudentController@update');
             Route::delete('/delete/{student_code}',     'StudentController@destroy');
-        });
 
-        Route::group([ 'prefix' => 'school' ],
-        function ()
-        {
-            Route::get('all',                           'SchoolController@index');
-            Route::post('/signup',                      'SchoolController@register');
-            Route::get('/show/{code}',                  'SchoolController@show');
-            Route::put('/update/{code}',                'SchoolController@update');
-            Route::delete('/delete/{code}',             'SchoolController@destroy');
+            // Student transactions routes
+            Route::post('/transaction',                 'StudentController@storeTransaction');
+            Route::get('/transactions/{student_code}',  'StudentController@transactions');
         });
     }
 );
