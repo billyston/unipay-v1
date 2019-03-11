@@ -104,11 +104,13 @@ Route::group
             Route::get('/transactions/{student_code}',  'StudentController@transactions');
         });
 
-        // Student routes
-        Route::group([],
-        function ()
-        {
-            Route::post('transaction',                       'TransactionController@store');
-        });
+
+
+
+//        Route::group([],
+//        function ()
+//        {
+//            Route::post('transaction',                       'TransactionController@store');
+//        });
     }
 );
