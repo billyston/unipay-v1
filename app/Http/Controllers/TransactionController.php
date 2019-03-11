@@ -34,6 +34,8 @@ class TransactionController extends Controller
                 'transaction_charge'        => 'required',
                 'total_amount'              => 'required',
                 'transaction_desc'          => 'required',
+                'rswitch'                   => 'required',
+                'rswitch_number'            => 'required',
             ] );
 
             try
@@ -88,17 +90,6 @@ class TransactionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show( Transaction $transaction )
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Transaction  $transaction
-     * @return \Illuminate\Http\Response
-     */
-    public function edit( Transaction $transaction )
     {
         //
     }

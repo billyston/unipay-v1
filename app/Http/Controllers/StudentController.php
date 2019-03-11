@@ -55,9 +55,6 @@ class StudentController extends Controller
 
             try
             {
-                // Get wallet details
-
-
                 $Student = new Student( $request -> except( 'password_confirmation' ) );
 
                 if ( $Student -> save() )

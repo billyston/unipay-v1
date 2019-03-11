@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\WalletResource;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -14,16 +15,6 @@ class WalletController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -99,20 +90,9 @@ class WalletController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function show(Wallet $wallet)
+    public function show( $wallet_code )
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Wallet  $wallet
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Wallet $wallet)
-    {
-        //
+        return new WalletResource( Wallet::findOrFail( $wallet_code ) );
     }
 
     /**
@@ -122,7 +102,7 @@ class WalletController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Wallet $wallet)
+    public function update( Request $request, Wallet $wallet )
     {
         //
     }
@@ -133,7 +113,7 @@ class WalletController extends Controller
      * @param  \App\Models\Wallet  $wallet
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Wallet $wallet)
+    public function destroy( Wallet $wallet )
     {
         //
     }
